@@ -54,8 +54,8 @@ def lambda_handler(event, context):
 
         get_log_group(name, kms_key_id, prev_state, tags, region, account_number)
         create_log_group(name, kms_key_id, tags, region, account_number)
-        add_tags()
-        remove_tags()
+        add_tags(name)
+        remove_tags(name)
         remove_log_group()
             
         return eh.finish()
@@ -111,7 +111,9 @@ def get_log_group(name, kms_key_id, prev_state, tags, region, account_number):
                 current_tags = response.get("tags")
                 if tags != current_tags:
                     remove_tags = [k for k in current_tags.keys() if k not in tags]
-                    add_tags = {k:v for k,v in tags.items() if k not in current_tags.keys()}
+                    add_tags = {k:v for k,v in tags.items() if (k,v) not in current_tags.items()}
+                    print(f"remove_tags = {remove_tags}")
+                    print(f"add_tags = {add_tags}")
                     if remove_tags:
                         eh.add_op("remove_tags", remove_tags)
                     if add_tags:
@@ -174,9 +176,8 @@ def remove_log_group():
             handle_common_errors(e, eh, "Delete Log Group Failed", 90 if car else 15)
 
 @ext(handler=eh, op="add_tags")
-def add_tags():
+def add_tags(name):
     tags = eh.ops['add_tags']
-    name = eh.props['name']
 
     try:
         logs.tag_log_group(
@@ -189,9 +190,7 @@ def add_tags():
         handle_common_errors(e, eh, "Add Tags Failed", 70, ['InvalidParameterValueException'])
         
 @ext(handler=eh, op="remove_tags")
-def remove_tags():
-    name = eh.props['name']
-
+def remove_tags(name):
     try:
         logs.untag_log_group(
             logGroupName=name,
