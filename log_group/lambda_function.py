@@ -163,15 +163,15 @@ def create_log_group(name, kms_key_id, tags, region, account_number):
 
 @ext(handler=eh, op="remove_log_group")
 def remove_log_group():
-    codebuild_project_name = eh.ops['remove_log_group'].get("name")
+    log_group_name = eh.ops['remove_log_group'].get("name")
     car = eh.ops['remove_log_group'].get("create_and_remove")
 
     try:
-        _ = logs.delete_project(name=codebuild_project_name)
-        eh.add_log("Deleted Log Group", {"name": codebuild_project_name})
+        _ = logs.delete_log_group(name=log_group_name)
+        eh.add_log("Deleted Log Group", {"name": log_group_name})
     except botocore.exceptions.ClientError as e:
         if e.response.get("Error").get("Code") == "ResourceNotFoundException":
-            eh.add_log("Log Group Does Not Exist", {"name": codebuild_project_name})
+            eh.add_log("Log Group Does Not Exist", {"name": log_group_name})
         else:
             handle_common_errors(e, eh, "Delete Log Group Failed", 90 if car else 15)
 
