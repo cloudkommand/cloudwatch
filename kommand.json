@@ -39,7 +39,8 @@
                     },
                     "tags": {
                         "type": "object",
-                        "description": "The tags to apply to the log group."
+                        "description": "The tags to apply to the log group.",
+                        "common": true
                     }
                 }
             },
