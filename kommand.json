@@ -1,0 +1,93 @@
+{
+    "components": {
+        "log_group": {
+            "type": "ext",
+            "displayname": "CK Cloudwatch Log Group",
+            "description": "Deploys a Cloudwatch Log Group. A few AWS resources require a cloudwatch log group to be created separate to the resource. This component is used to create those log groups.",
+            "cloud": "AWS",
+            "resources": [
+                "AWS::logs::loggroup"
+            ],
+            "ck_plugin_tier": 3,
+            "policy": {
+                "Version": "2012-10-17",
+                "Statement": [{
+                    "Sid": "Vis",
+                    "Effect": "Allow",
+                    "Action": [
+                        "logs:CreateLogGroup",
+                        "logs:DescribeLogGroups",
+                        "logs:DeleteLogGroup",
+                        "logs:ListTagsForResource",
+                        "logs:ListTagsLogGroup",
+                        "logs:TagLogGroup",
+                        "logs:UntagLogGroup"
+                    ],
+                    "Resource": "*"
+                }]
+            },
+            "input": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the log group. If not present this name will be auto-generated."
+                    },
+                    "kms_key_id": {
+                        "type": "string",
+                        "description": "The ID of the KMS key to use to encrypt log data. If not present, the AWS default will be used."
+                    },
+                    "tags": {
+                        "type": "object",
+                        "description": "The tags to apply to the log group."
+                    }
+                }
+            },
+            "props": {
+                "arn": {
+                    "type": "string",
+                    "description": "The ARN of the log group"
+                },
+                "star_arn": {
+                    "type": "string",
+                    "description": "The ARN of the log group that ends with ':*'"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the log group"
+                },
+                "kms_key_id": {
+                    "type": "string",
+                    "description": "The ID of the KMS key encrypting the log group. If None, the AWS default is being used."
+                }
+            },
+            "examples": [
+                {
+                    "displayname": "Tagged with Specified Name",
+                    "notes": "This example sets the name to a specific value and adds a few tags.",
+                    "definition": {
+                        "type": "&cloudwatch.log_group",
+                        "name": "/workgroup1/log-group-7",
+                        "tags": {
+                            "workgroup": "workgroup1",
+                            "company": "mycompany",
+                            "environment": "dev"
+                        }
+                    }
+                },
+                {
+                    "displayname": "Using KMS Key with Tags",
+                    "notes": "This example allows the name to auto generate, but specifies the KMS Key and a couple of tags. Note that the KMS Key ID is not the ARN.",
+                    "definition": {
+                        "type": "&cloudwatch.log_group",
+                        "kms_key_id": "1234abcd-12ab-34cd-56ef-1234567890ab",
+                        "tags": {
+                            "company": "mycompany7",
+                            "environment": "development"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
