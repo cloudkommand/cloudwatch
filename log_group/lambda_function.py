@@ -167,7 +167,7 @@ def remove_log_group():
     car = eh.ops['remove_log_group'].get("create_and_remove")
 
     try:
-        _ = logs.delete_log_group(name=log_group_name)
+        _ = logs.delete_log_group(logGroupName=log_group_name)
         eh.add_log("Deleted Log Group", {"name": log_group_name})
     except botocore.exceptions.ClientError as e:
         if e.response.get("Error").get("Code") == "ResourceNotFoundException":
