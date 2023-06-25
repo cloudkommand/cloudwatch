@@ -139,7 +139,7 @@ def create_log_group(name, kms_key_id, tags, region, account_number):
     group_spec = remove_none_attributes({
         "logGroupName": name,
         "kmsKeyId": kms_key_id,
-        "tags": tags
+        "tags": tags or None
     })
 
     try:
@@ -155,7 +155,7 @@ def create_log_group(name, kms_key_id, tags, region, account_number):
     except ClientError as e:
         handle_common_errors(
             e, eh, "Create Log Group Failed", 20,
-            perm_errors=["InvalidInputException", "AccountLimitExceededException"]
+            perm_errors=["InvalidParameterException", "AccountLimitExceededException"]
         )
 
 @ext(handler=eh, op="remove_log_group")
