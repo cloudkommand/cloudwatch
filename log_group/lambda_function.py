@@ -9,7 +9,7 @@ import hashlib
 
 from urllib.parse import quote
 
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, ParamValidationError
 
 from extutil import remove_none_attributes, account_context, ExtensionHandler, ext, \
     current_epoch_time_usec_num, component_safe_name, lambda_env, random_id, \
@@ -125,10 +125,11 @@ def get_log_group(name, kms_key_id, prev_state, tags, region, account_number):
                     })
                     eh.add_log("Log Group Exists: Exiting", {"name": name})
                     
-
-
-    except botocore.exceptions.ClientError as e:
+    except ClientError as e:
         handle_common_errors(e, eh, "Get Log Group Failed", 10)
+    except ParamValidationError as e:
+        eh.add_log("Invalid Parameter", {"error": str(e)}, is_error=True)
+        eh.perm_error("Invalid Parameter")
 
 @ext(handler=eh, op="create_log_group")
 def create_log_group(name, kms_key_id, tags, region, account_number):
