@@ -101,7 +101,7 @@ def get_log_group(name, kms_key_id, prev_state, tags, region, account_number):
                 eh.perm_error("KMS Key ID Cannot Change")
                 return
     try:
-        response = logs.describe_log_groups(logGroupNamePrefix=[name])
+        response = logs.describe_log_groups(logGroupNamePrefix=name)
         if response.get("logGroups"):
             if response.get("logGroups")[0].get("logGroupName") == name:
                 eh.add_log("Found Log Group", response.get("logGroups")[0])
