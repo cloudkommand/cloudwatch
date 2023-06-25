@@ -95,6 +95,7 @@ def get_log_group(name, kms_key_id, prev_state, tags, region, account_number):
         if name != prev_name:
             eh.add_op("remove_log_group", {"create_and_remove": True, "name": prev_name})
         else:
+            # Note this handles None properly
             prev_kms_key_id = prev_state.get("props").get("kms_key_id")
             if prev_kms_key_id != kms_key_id:
                 eh.add_log("KMS Key ID Cannot Change", {"old": prev_kms_key_id, "new": kms_key_id}, is_error=True)
