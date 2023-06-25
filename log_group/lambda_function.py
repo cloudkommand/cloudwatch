@@ -124,7 +124,10 @@ def get_log_group(name, kms_key_id, prev_state, tags, region, account_number):
                         "star_arn": gen_log_group_star_arn(name, region, account_number)
                     })
                     eh.add_log("Log Group Exists: Exiting", {"name": name})
-                    
+            else:
+                eh.add_op("create_log_group")
+        else:
+            eh.add_op("create_log_group")       
     except ClientError as e:
         handle_common_errors(e, eh, "Get Log Group Failed", 10)
     except ParamValidationError as e:
